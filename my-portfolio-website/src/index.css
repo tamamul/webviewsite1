@@ -1,0 +1,15 @@
+.hero {
+    background-color: #f0f0f5; /* Light gray background */
+    padding: 60px 0; /* Top/bottom padding */
+    text-align: center; 
+  }
+  
+  .hero h1 {
+    font-size: 3.5em; 
+    margin-bottom: 0.5em;
+  }
+  
+  .hero h2 {
+    font-size: 1.8em;
+    color: #555; /* Darker gray for the headline */
+  }
