@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO DO LIST - تطبيق المهام</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff9ec3;
+            --secondary-color: #d6a3fb;
+            --accent-color: #a5dff9;
+            --background-color: #fff5f9;
+            --text-color: #5a3d5c;
+            --light-pink: #ffdfee;
+            --light-purple: #efe6f9;
+            --light-blue: #e6f7ff;
+            --border-radius: 15px;
+            --box-shadow: 0 8px 20px rgba(164, 110, 173, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-pink), var(--light-purple));
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+            flex: 1;
+        }
+
+        .app-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+            border-bottom: 3px solid white;
+        }
+
+        .app-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(90, 61, 92, 0.4);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: white;
+            font-size: 1rem;
+            opacity: 0.9;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(90, 61, 92, 0.3);
+        }
+
+        .motivation-text {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: inline-block;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(90, 61, 92, 0.2);
+        }
+
+        .tabs {
+            display: flex;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            padding: 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 15px;
+            cursor: pointer;
+            color: white;
+            font-weight: 700;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(90, 61, 92, 0.3);
+            flex: 1;
+            text-align: center;
+            min-width: 100px;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab.active {
+            border-bottom: 3px solid white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab:active {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0.98);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(164, 110, 173, 0.1);
+            border: 2px solid var(--light-pink);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--light-pink);
+            display: flex;
+            align-items: center;
+            text-shadow: 1px 1px 3px rgba(90, 61, 92, 0.2);
+        }
+
+        .section-title i {
+            margin-left: 8px;
+        }
+
+        .task-input {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 8px;
+            flex-direction: column;
+        }
+
+        .task-input input, .shopping-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--light-pink);
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Cairo', sans-serif;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .task-input input:focus, .shopping-input input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            width: 100%;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-shadow: 1px 1px 2px rgba(90, 61, 92, 0.3);
+        }
+
+        .btn-primary:active {
+            opacity: 0.9;
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(to right, #25D366, #128C7E);
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 500px;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .whatsapp-btn:active {
+            transform: translateY(-3px) scale(0.98);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn i {
+            margin-left: 8px;
+            font-size: 1.2rem;
+        }
+
+        .theme-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .theme {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .theme:active {
+            transform: scale(1.1);
+        }
+
+        .theme-1 { background: linear-gradient(to right, #ff9ec3, #d6a3fb); }
+        .theme-2 { background: linear-gradient(to right, #a5dff9, #d6a3fb); }
+        .theme-3 { background: linear-gradient(to right, #ffb3ba, #ffdfd3); }
+        .theme-4 { background: linear-gradient(to right, #c8a2c8, #b19cd9); }
+        .theme-5 { background: linear-gradient(to right, #ffd1dc, #f8c8dc); }
+
+        .task-list, .shopping-list {
+            list-style: none;
+        }
+
+        .task-item, .shopping-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: var(--light-blue);
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s;
+            border-left: 5px solid var(--accent-color);
+            border: 2px solid var(--light-blue);
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .task-item.completed, .shopping-item.completed {
+            opacity: 0.7;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .task-text, .shopping-text {
+            flex: 1;
+            margin: 0 10px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .task-item.completed .task-text, .shopping-item.completed .shopping-text {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-actions, .shopping-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .task-actions button, .shopping-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            transition: color 0.3s;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .task-actions button:active, .shopping-actions button:active {
+            border: 2px solid var(--primary-color);
+            transform: scale(0.9);
+        }
+
+        .task-actions .complete-btn:active, .shopping-actions .complete-btn:active {
+            color: #4caf50;
+        }
+
+        .task-actions .delete-btn:active, .shopping-actions .delete-btn:active {
+            color: #f44336;
+        }
+
+        .notification {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.5s;
+            border-right: 5px solid var(--primary-color);
+            border: 2px solid var(--light-pink);
+            max-width: 80%;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            margin-left: 8px;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .notification-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .shopping-item {
+            border: 2px solid var(--light-purple);
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .motivational-quotes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quote {
+            background: linear-gradient(45deg, var(--light-pink), var(--light-blue));
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            flex: 1;
+            min-width: 150px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .quantity-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--light-pink);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .quantity-btn:active {
+            transform: scale(0.9);
+        }
+
+        .quantity-value {
+            margin: 0 10px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            .app-name {
+                font-size: 1.8rem;
+            }
+            
+            .app-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .tab {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .quote {
+                min-width: 100%;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+            
+            .task-input {
+                flex-direction: row;
+            }
+            
+            .btn {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="appContainer">
+        <header class="app-header">
+            <h1 class="app-name">TO DO LIST</h1>
+            <p class="app-subtitle">تطبيق المهام الشخصي لتنظيم وقتك بكفاءة</p>
+            <div class="motivation-text">"النجاح هو مجموع الجهود الصغيرة التي تتكرر يومياً"</div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('tasks')">المهام</div>
+            <div class="tab" onclick="switchTab('shopping')">المشتريات</div>
+            <div class="tab" onclick="switchTab('themes')">التخصيص</div>
+        </div>
+
+        <div class="tab-content active" id="tasksTab">
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-tasks"></i> إضافة مهمة جديدة</h2>
+                <div class="task-input">
+                    <input type="text" id="taskInput" placeholder="أدخل المهمة هنا...">
+                    <button class="btn btn-primary" onclick="addTask()">إضافة مهمة</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-list-check"></i> قائمة المهام</h2>
+                <ul class="task-list" id="taskList">
+                    <!-- Tasks will be added here dynamically -->
+                </ul>
+            </div>
+
+            <div class="motivational-quotes">
+                <div class="quote">"لا تنتظر الظروف المثالية، افعلها الآن"</div>
+                <div class="quote">"التخطيط الجيد هو نصف النجاح"</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="shoppingTab">
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-shopping-cart"></i> إضافة عنصر جديد</h2>
+                <div class="task-input">
+                    <input type="text" id="shoppingInput" placeholder="أدخل العنصر هنا...">
+                    <button class="btn btn-primary" onclick="addShoppingItem()">إضافة عنصر</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-list"></i> قائمة المشتريات</h2>
+                <ul class="shopping-list" id="shoppingList">
+                    <!-- Shopping items will be added here dynamically -->
+                </ul>
+            </div>
+
+            <div class="motivational-quotes">
+                <div class="quote">"التخطيط الجيد للتسوق يوفر الوقت والمال"</div>
+                <div class="quote">"قائمة المشتريات تنظم احتياجاتك وتوفر مجهودك"</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="themesTab">
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-palette"></i> اختر لون التطبيق</h2>
+                <div class="theme-selector">
+                    <div class="theme theme-1" onclick="changeTheme('1')"></div>
+                    <div class="theme theme-2" onclick="changeTheme('2')"></div>
+                    <div class="theme theme-3" onclick="changeTheme('3')"></div>
+                    <div class="theme theme-4" onclick="changeTheme('4')"></div>
+                    <div class="theme theme-5" onclick="changeTheme('5')"></div>
+                </div>
+            </div>
+
+            <div class="motivational-quotes">
+                <div class="quote">"اختر الألوان التي تلهمك للإنتاجية"</div>
+                <div class="quote">"بيئة العمل الجميلة تحفز الإبداع"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- زر الواتساب في أسفل الصفحة -->
+    <a href="https://whatsapp.com/channel/0029Va5ybfbCBtx6cPCSzw1p" class="whatsapp-btn" target="_blank" id="whatsappBtn">
+        أنت كريستالة 🥰
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i>
+        <div class="notification-text">تمت الإضافة بنجاح!</div>
+    </div>
+
+    <script>
+        // تعريف المتغيرات العامة
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let shoppingItems = JSON.parse(localStorage.getItem('shoppingItems')) || [];
+        
+        // تهيئة التطبيق عند تحميل الصفحة
+        window.onload = function() {
+            initApp();
+        };
+        
+        // تهيئة التطبيق
+        function initApp() {
+            console.log("بدأت تهيئة التطبيق");
+            
+            // إضافة event listener لحقل إدخال المهام
+            document.getElementById('taskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addTask();
+            });
+            
+            // إضافة event listener لحقل إدخال المشتريات
+            document.getElementById('shoppingInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addShoppingItem();
+            });
+            
+            // التهيئة الأولية
+            renderTasks();
+            renderShoppingList();
+            
+            console.log("تم تهيئة التطبيق بنجاح");
+        }
+        
+        // تبديل التبويبات
+        function switchTab(tabName) {
+            // إخفاء جميع المحتويات
+            document.querySelectorAll('.tab-content').forEach(function(content) {
+                content.classList.remove('active');
+            });
+            
+            // إزالة النشاط من جميع علامات التبويب
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            
+            // إظهار المحتوى المحدد
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // تعيين النشاط لعلامة التبويب المحددة
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                if (tab.textContent === getTabName(tabName)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+        
+        // الحصول على اسم التبويب بالعربية
+        function getTabName(tabName) {
+            switch(tabName) {
+                case 'tasks': return 'المهام';
+                case 'shopping': return 'المشتريات';
+                case 'themes': return 'التخصيص';
+                default: return '';
+            }
+        }
+        
+        // إدارة المهام
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const text = taskInput.value.trim();
+            if (text) {
+                tasks.push({ text: text, completed: false });
+                taskInput.value = '';
+                renderTasks();
+                showNotification('تمت إضافة المهمة بنجاح!');
+            }
+        }
+        
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+        
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+        
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            
+            tasks.forEach(function(task, index) {
+                const li = document.createElement('li');
+                li.className = 'task-item' + (task.completed ? ' completed' : '');
+                li.innerHTML = `
+                    <input type="checkbox" class="complete-checkbox" ${task.completed ? 'checked' : ''} onclick="toggleComplete(${index})">
+                    <span class="task-text">${task.text}</span>
+                    <div class="task-actions">
+                        <button class="complete-btn" onclick="toggleComplete(${index})"><i class="fas ${task.completed ? 'fa-undo' : 'fa-check'}"></i></button>
+                        <button class="delete-btn" onclick="deleteTask(${index})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+            
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+        
+        // إدارة قائمة المشتريات
+        function addShoppingItem() {
+            const shoppingInput = document.getElementById('shoppingInput');
+            const name = shoppingInput.value.trim();
+            if (name) {
+                shoppingItems.push({ 
+                    name: name, 
+                    completed: false,
+                    quantity: 1
+                });
+                shoppingInput.value = '';
+                renderShoppingList();
+                showNotification('تمت إضافة العنصر بنجاح!');
+            }
+        }
+        
+        function toggleShoppingComplete(index) {
+            shoppingItems[index].completed = !shoppingItems[index].completed;
+            renderShoppingList();
+        }
+        
+        function deleteShoppingItem(index) {
+            shoppingItems.splice(index, 1);
+            renderShoppingList();
+        }
+        
+        function increaseQuantity(index) {
+            shoppingItems[index].quantity++;
+            renderShoppingList();
+        }
+        
+        function decreaseQuantity(index) {
+            if (shoppingItems[index].quantity > 1) {
+                shoppingItems[index].quantity--;
+                renderShoppingList();
+            }
+        }
+        
+        function renderShoppingList() {
+            const shoppingList = document.getElementById('shoppingList');
+            shoppingList.innerHTML = '';
+            
+            shoppingItems.forEach(function(item, index) {
+                const li = document.createElement('li');
+                li.className = 'shopping-item' + (item.completed ? ' completed' : '');
+                li.innerHTML = `
+                    <input type="checkbox" class="complete-checkbox" ${item.completed ? 'checked' : ''} onclick="toggleShoppingComplete(${index})">
+                    <div>
+                        <div class="shopping-text">${item.name}</div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="decreaseQuantity(${index})">-</button>
+                            <span class="quantity-value">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="increaseQuantity(${index})">+</button>
+                        </div>
+                    </div>
+                    <div class="shopping-actions">
+                        <button class="complete-btn" onclick="toggleShoppingComplete(${index})"><i class="fas ${item.completed ? 'fa-undo' : 'fa-check'}"></i></button>
+                        <button class="delete-btn" onclick="deleteShoppingItem(${index})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                shoppingList.appendChild(li);
+            });
+            
+            localStorage.setItem('shoppingItems', JSON.stringify(shoppingItems));
+        }
+        
+        // تغيير السمات
+        function changeTheme(themeNum) {
+            const root = document.documentElement;
+            
+            switch(themeNum) {
+                case '1':
+                    root.style.setProperty('--primary-color', '#ff9ec3');
+                    root.style.setProperty('--secondary-color', '#d6a3fb');
+                    root.style.setProperty('--accent-color', '#a5dff9');
+                    break;
+                case '2':
+                    root.style.setProperty('--primary-color', '#a5dff9');
+                    root.style.setProperty('--secondary-color', '#d6a3fb');
+                    root.style.setProperty('--accent-color', '#ff9ec3');
+                    break;
+                case '3':
+                    root.style.setProperty('--primary-color', '#ffb3ba');
+                    root.style.setProperty('--secondary-color', '#ffdfd3');
+                    root.style.setProperty('--accent-color', '#c8a2c8');
+                    break;
+                case '4':
+                    root.style.setProperty('--primary-color', '#c8a2c8');
+                    root.style.setProperty('--secondary-color', '#b19cd9');
+                    root.style.setProperty('--accent-color', '#ffd1dc');
+                    break;
+                case '5':
+                    root.style.setProperty('--primary-color', '#ffd1dc');
+                    root.style.setProperty('--secondary-color', '#f8c8dc');
+                    root.style.setProperty('--accent-color', '#c8a2c8');
+                    break;
+            }
+            
+            showNotification('تم تغيير السمة بنجاح!');
+        }
+        
+        // عرض الإشعارات
+        function showNotification(text) {
+            const notification = document.getElementById('notification');
+            notification.querySelector('.notification-text').textContent = text;
+            notification.classList.add('show');
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
