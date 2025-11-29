@@ -1,21 +1,3 @@
-Skip to content
-Navigation Menu
-tamamul
-webview
-
-Code
-Pull requests
-Actions
-Projects
-Security
-Insights
-Settings
-Build Android WebView APK
-Update MainActivity.java #7
-Jobs
-Run details
-Workflow file for this run
-.github/workflows/main.yml at 83849d6
 name: Build Android WebView APK
 
 on:
